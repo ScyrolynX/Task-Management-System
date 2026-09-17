@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Contact – Task Management System</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+<body>
+
+    <div class="static-shell">
+
+        <nav class="static-nav">
+
+            <div class="static-brand">
+                <div class="brand-mark">T</div>
+                <span>TaskFlow</span>
+            </div>
+
+            <div class="static-links">
+                <a href="{{ url_for('tasks.task_page') }}">Tasks</a>
+                <a href="{{ url_for('pages.about') }}">About</a>
+                <a href="{{ url_for('pages.contact') }}" class="active">Contact</a>
+            </div>
+
+        </nav>
+
+        <main class="static-content">
+
+            <span class="eyebrow">CONTACT</span>
+            <h1>Contact</h1>
+
+            <div class="page-card">
+
+                <h2>Get in touch</h2>
+
+                <p>
+                    This project was created as part of my learning journey in backend
+                    development and DevOps.
+                </p>
+
+                <p>You can reach me at:</p>
+
+                <ul>
+                    <li><strong>Email:</strong> codexharry11@gmail.com</li>
+                    <li><strong>GitHub:</strong> <a href="https://github.com/ScyrolynX">github.com/codex-inspiron</a></li>
+                    <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/igbodika-henry-python1306code">linkedin.com/in/igbodika-henry-python1306code</a></li>
+                    <li><strong>Contact:</strong> +233 020 945 3186, +225 050 701 1189</li>
+                </ul>
+
+                <p>
+                    In the future, this page could be connected to a real contact form
+                    that sends messages or saves feedback to a database.
+                </p>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Task Manager</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <div class="app-shell">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+
+            <div class="sidebar-brand">
+                <div class="brand-mark">T</div>
+
+                <div>
+                    <h1>TaskFlow</h1>
+                    <span>Task Management</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+
+                <div class="nav-section">
+                    <span class="nav-label">Workspace</span>
+
+                    <a
+                        href="{{ url_for('tasks.task_page', view='today') }}"
+                        class="nav-item {% if current_view == 'today' %}active{% endif %}"
+                    >
+                        <span class="nav-icon">☀</span>
+                        <span>Today</span>
+                        <span class="nav-count">
+                            {{ today_tasks|length }}
+                        </span>
+                    </a>
+
+                    <a
+                        href="{{ url_for('tasks.task_page', view='upcoming') }}"
+                        class="nav-item {% if current_view == 'upcoming' %}active{% endif %}"
+                    >
+                        <span class="nav-icon">◷</span>
+                        <span>Upcoming</span>
+                        <span class="nav-count">
+                            {{ upcoming_tasks|length }}
+                        </span>
+                    </a>
+
+                    <a
+                        href="{{ url_for('tasks.task_page', view='completed') }}"
+                        class="nav-item {% if current_view == 'completed' %}active{% endif %}"
+                    >
+                        <span class="nav-icon">✓</span>
+                        <span>Completed</span>
+                        <span class="nav-count">
+                            {{ completed_tasks|length }}
+                        </span>
+                    </a>
+
+                    <a
+                        href="{{ url_for('tasks.task_page', view='overdue') }}"
+                        class="nav-item {% if current_view == 'overdue' %}active{% endif %}"
+                    >
+                        <span class="nav-icon">!</span>
+                        <span>Overdue</span>
+                        <span class="nav-count">
+                            {{ overdue_tasks|length }}
+                        </span>
+                    </a>
+
+                </div>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+
+                <div class="sidebar-progress">
+                    <div class="progress-header">
+                        <span>Progress</span>
+                        <strong>{{ progress }}%</strong>
+                    </div>
+
+                    <div class="progress-track">
+                        <div
+                            class="progress-bar"
+                            style="width: {{ progress }}%;"
+                        ></div>
+                    </div>
+
+                    <p>
+                        {{ completed_count }} of {{ total_tasks }} tasks completed
+                    </p>
+                </div>
+
+                <a
+                    href="{{ url_for('pages.about') }}"
+                    class="sidebar-link"
+                >
+                    About
+                </a>
+
+                <a
+                    href="{{ url_for('pages.contact') }}"
+                    class="sidebar-link"
+                >
+                    Contact
+                </a>
+
+            </div>
+
+        </aside>
+
+
+        <!-- Main -->
+        <main class="main-content">
+
+            <!-- Topbar -->
+            <header class="topbar">
+
+                <div class="topbar-left">
+
+                    <button
+                        type="button"
+                        class="mobile-menu-button"
+                        aria-label="Open menu"
+                    >
+                        ☰
+                    </button>
+
+                    <div>
+                        <span class="eyebrow">TASK MANAGEMENT</span>
+
+                        <h2>
+                            {% if current_view == 'today' %}
+                                Today
+                            {% elif current_view == 'upcoming' %}
+                                Upcoming
+                            {% elif current_view == 'completed' %}
+                                Completed
+                            {% elif current_view == 'overdue' %}
+                                Overdue
+                            {% else %}
+                                All Tasks
+                            {% endif %}
+                        </h2>
+                    </div>
+
+                </div>
+
+                <div class="topbar-actions">
+
+                    <button
+                        type="button"
+                        class="icon-button"
+                        aria-label="Search"
+                        id="searchToggle"
+                    >
+                        ⌕
+                    </button>
+
+                    <button
+                        type="button"
+                        class="avatar"
+                        aria-label="Profile"
+                    >
+                        H
+                    </button>
+
+                </div>
+
+            </header>
+
+
+            <!-- Hero -->
+            <section class="hero-section">
+
+                <div class="hero-content">
+
+                    <span class="hero-kicker">
+                        {% if current_view == 'today' %}
+                            YOUR DAY
+                        {% elif current_view == 'upcoming' %}
+                            WHAT'S NEXT
+                        {% elif current_view == 'completed' %}
+                            YOUR PROGRESS
+                        {% elif current_view == 'overdue' %}
+                            NEEDS ATTENTION
+                        {% endif %}
+                    </span>
+
+                    <h1>
+                        {% if current_view == 'today' %}
+                            Stay focused on what matters.
+                        {% elif current_view == 'upcoming' %}
+                            Prepare for what's coming.
+                        {% elif current_view == 'completed' %}
+                            Look how far you've come.
+                        {% elif current_view == 'overdue' %}
+                            Let's get things back on track.
+                        {% else %}
+                            Everything in one place.
+                        {% endif %}
+                    </h1>
+
+                    <p>
+                        Organize your work, track your progress,
+                        and keep moving forward.
+                    </p>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="primary-button"
+                    data-open-modal
+                >
+                    <span>+</span>
+                    New Task
+                </button>
+
+            </section>
+
+
+            <!-- Stats -->
+            <section class="stats-grid">
+
+                <article class="stat-card">
+
+                    <div class="stat-icon">
+                        ◷
+                    </div>
+
+                    <div>
+                        <span class="stat-label">Total Tasks</span>
+                        <strong>{{ total_tasks }}</strong>
+                    </div>
+
+                </article>
+
+
+                <article class="stat-card">
+
+                    <div class="stat-icon">
+                        ✓
+                    </div>
+
+                    <div>
+                        <span class="stat-label">Completed</span>
+                        <strong>{{ completed_count }}</strong>
+                    </div>
+
+                </article>
+
+
+                <article class="stat-card">
+
+                    <div class="stat-icon">
+                        !
+                    </div>
+
+                    <div>
+                        <span class="stat-label">Overdue</span>
+                        <strong>{{ overdue_count }}</strong>
+                    </div>
+
+                </article>
+
+
+                <article class="stat-card">
+
+                    <div class="stat-icon">
+                        %
+                    </div>
+
+                    <div>
+                        <span class="stat-label">Progress</span>
+                        <strong>{{ progress }}%</strong>
+                    </div>
+
+                </article>
+
+            </section>
+
+
+            <!-- Toolbar -->
+            <section class="task-toolbar">
+
+                <div class="search-box">
+
+                    <span>⌕</span>
+
+                    <input
+                        type="search"
+                        id="taskSearch"
+                        placeholder="Search tasks..."
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+                <div class="toolbar-actions">
+
+                    <select id="priorityFilter">
+                        <option value="all">All priorities</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+
+
+                    <select id="sortTasks">
+
+                        <option value="newest">
+                            Newest
+                        </option>
+
+                        <option value="oldest">
+                            Oldest
+                        </option>
+
+                        <option value="priority">
+                            Priority
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </section>
+
+
+            <!-- TODAY -->
+            {% if current_view == 'today' %}
+
+            <section
+                class="task-section"
+                id="today"
+            >
+
+                <div class="section-heading">
+
+                    <div>
+                        <span class="section-kicker">
+                            TODAY
+                        </span>
+
+                        <h3>
+                            Today's Tasks
+                        </h3>
+                    </div>
+
+                    <span class="section-count">
+                        {{ today_tasks|length }}
+                    </span>
+
+                </div>
+
+
+                <div class="task-list">
+
+                    {% for task in today_tasks %}
+
+                    <article
+                        class="task-item {% if task.completed %}completed{% endif %}"
+                        data-task-id="{{ task.id }}"
+                        data-task="{{ task.content|lower }}"
+                        data-priority="{{ task.priority }}"
+                        data-created="{{ task.created.isoformat() }}"
+                    >
+
+                        <button
+                            type="button"
+                            class="checkbox-button {% if task.completed %}checked{% endif %}"
+                            data-action="toggle"
+                            aria-label="Complete task"
+                        ></button>
+
+
+                        <div class="task-content">
+
+                            <div class="task-main">
+
+                                <h4>
+                                    {{ task.content }}
+                                </h4>
+
+                                {% if task.description %}
+
+                                <p>
+                                    {{ task.description }}
+                                </p>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <div class="task-meta">
+
+                                <span
+                                    class="priority priority-{{ task.priority }}"
+                                >
+                                    {{ task.priority|capitalize }}
+                                </span>
+
+                                <span class="category">
+                                    {{ task.category }}
+                                </span>
+
+                                {% if task.exp_date %}
+
+                                <time>
+                                    {{ task.exp_date.strftime('%b %d, %Y %H:%M') }}
+                                </time>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="task-actions">
+
+                            <a
+                                href="{{ url_for('tasks.task_edit', task_id=task.id) }}"
+                                class="task-action"
+                                aria-label="Edit task"
+                            >
+                                ✎
+                            </a>
+
+                            <button
+                                type="button"
+                                class="task-action"
+                                data-action="skip"
+                                aria-label="Skip task"
+                            >
+                                →
+                            </button>
+
+                            <button
+                                type="button"
+                                class="task-action danger"
+                                data-action="delete"
+                                aria-label="Delete task"
+                            >
+                                ×
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                    {% else %}
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            ✓
+                        </div>
+
+                        <h4>No tasks for today</h4>
+
+                        <p>
+                            You're all caught up. Add a new task to get started.
+                        </p>
+
+                        <button
+                            type="button"
+                            class="primary-button"
+                            data-open-modal
+                        >
+                            + New Task
+                        </button>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            {% endif %}
+
+
+            <!-- UPCOMING -->
+            {% if current_view == 'upcoming' %}
+
+            <section
+                class="task-section"
+                id="upcoming"
+            >
+
+                <div class="section-heading">
+
+                    <div>
+                        <span class="section-kicker">
+                            UPCOMING
+                        </span>
+
+                        <h3>
+                            Upcoming Tasks
+                        </h3>
+                    </div>
+
+                    <span class="section-count">
+                        {{ upcoming_tasks|length }}
+                    </span>
+
+                </div>
+
+
+                <div class="task-list">
+
+                    {% for task in upcoming_tasks %}
+
+                    <article
+                        class="task-item"
+                        data-task-id="{{ task.id }}"
+                        data-task="{{ task.content|lower }}"
+                        data-priority="{{ task.priority }}"
+                        data-created="{{ task.created.isoformat() }}"
+                    >
+
+                        <button
+                            type="button"
+                            class="checkbox-button"
+                            data-action="toggle"
+                            aria-label="Complete task"
+                        ></button>
+
+
+                        <div class="task-content">
+
+                            <div class="task-main">
+
+                                <h4>
+                                    {{ task.content }}
+                                </h4>
+
+                                {% if task.description %}
+
+                                <p>
+                                    {{ task.description }}
+                                </p>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <div class="task-meta">
+
+                                <span
+                                    class="priority priority-{{ task.priority }}"
+                                >
+                                    {{ task.priority|capitalize }}
+                                </span>
+
+                                <span class="category">
+                                    {{ task.category }}
+                                </span>
+
+                                {% if task.exp_date %}
+
+                                <time>
+                                    {{ task.exp_date.strftime('%b %d, %Y %H:%M') }}
+                                </time>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="task-actions">
+
+                            <a
+                                href="{{ url_for('tasks.task_edit', task_id=task.id) }}"
+                                class="task-action"
+                                aria-label="Edit task"
+                            >
+                                ✎
+                            </a>
+
+                            <button
+                                type="button"
+                                class="task-action"
+                                data-action="skip"
+                                aria-label="Skip task"
+                            >
+                                →
+                            </button>
+
+                            <button
+                                type="button"
+                                class="task-action danger"
+                                data-action="delete"
+                                aria-label="Delete task"
+                            >
+                                ×
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                    {% else %}
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            ◷
+                        </div>
+
+                        <h4>No upcoming tasks</h4>
+
+                        <p>
+                            Nothing scheduled for the future yet.
+                        </p>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            {% endif %}
+
+
+            <!-- OVERDUE -->
+            {% if current_view == 'overdue' %}
+
+            <section
+                class="task-section"
+                id="overdue"
+            >
+
+                <div class="section-heading">
+
+                    <div>
+                        <span class="section-kicker">
+                            ATTENTION
+                        </span>
+
+                        <h3>
+                            Overdue Tasks
+                        </h3>
+                    </div>
+
+                    <span class="section-count danger-count">
+                        {{ overdue_tasks|length }}
+                    </span>
+
+                </div>
+
+
+                <div class="task-list">
+
+                    {% for task in overdue_tasks %}
+
+                    <article
+                        class="task-item overdue-task"
+                        data-task-id="{{ task.id }}"
+                        data-task="{{ task.content|lower }}"
+                        data-priority="{{ task.priority }}"
+                        data-created="{{ task.created.isoformat() }}"
+                    >
+
+                        <button
+                            type="button"
+                            class="checkbox-button"
+                            data-action="toggle"
+                            aria-label="Complete task"
+                        ></button>
+
+
+                        <div class="task-content">
+
+                            <div class="task-main">
+
+                                <h4>
+                                    {{ task.content }}
+                                </h4>
+
+                                {% if task.description %}
+
+                                <p>
+                                    {{ task.description }}
+                                </p>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <div class="task-meta">
+
+                                <span
+                                    class="priority priority-{{ task.priority }}"
+                                >
+                                    {{ task.priority|capitalize }}
+                                </span>
+
+                                <span class="category">
+                                    {{ task.category }}
+                                </span>
+
+                                {% if task.exp_date %}
+
+                                <time class="overdue-date">
+                                    {{ task.exp_date.strftime('%b %d, %Y %H:%M') }}
+                                </time>
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="task-actions">
+
+                            <a
+                                href="{{ url_for('tasks.task_edit', task_id=task.id) }}"
+                                class="task-action"
+                                aria-label="Edit task"
+                            >
+                                ✎
+                            </a>
+
+                            <button
+                                type="button"
+                                class="task-action"
+                                data-action="skip"
+                                aria-label="Skip task"
+                            >
+                                →
+                            </button>
+
+                            <button
+                                type="button"
+                                class="task-action danger"
+                                data-action="delete"
+                                aria-label="Delete task"
+                            >
+                                ×
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                    {% else %}
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            ✓
+                        </div>
+
+                        <h4>No overdue tasks</h4>
+
+                        <p>
+                            Everything is on schedule.
+                        </p>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            {% endif %}
+
+
+            <!-- COMPLETED -->
+            {% if current_view == 'completed' %}
+
+            <section
+                class="task-section"
+                id="completed"
+            >
+
+                <div class="section-heading">
+
+                    <div>
+                        <span class="section-kicker">
+                            DONE
+                        </span>
+
+                        <h3>
+                            Completed Tasks
+                        </h3>
+                    </div>
+
+                    <span class="section-count">
+                        {{ completed_tasks|length }}
+                    </span>
+
+                </div>
+
+
+                <div class="task-list">
+
+                    {% for task in completed_tasks %}
+
+                    <article
+                        class="task-item completed"
+                        data-task-id="{{ task.id }}"
+                        data-task="{{ task.content|lower }}"
+                        data-priority="{{ task.priority }}"
+                        data-created="{{ task.created.isoformat() }}"
+                    >
+
+                        <button
+                            type="button"
+                            class="checkbox-button checked"
+                            data-action="toggle"
+                            aria-label="Mark task incomplete"
+                        ></button>
+
+
+                        <div class="task-content">
+
+                            <div class="task-main">
+
+                                <h4>
+                                    {{ task.content }}
+                                </h4>
+
+                                {% if task.description %}
+
+                                <p>
+                                    {{ task.description }}
+                                </p>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <div class="task-meta">
+
+                                <span
+                                    class="priority priority-{{ task.priority }}"
+                                >
+                                    {{ task.priority|capitalize }}
+                                </span>
+
+                                <span class="category">
+                                    {{ task.category }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="task-actions">
+
+                            <a
+                                href="{{ url_for('tasks.task_edit', task_id=task.id) }}"
+                                class="task-action"
+                                aria-label="Edit task"
+                            >
+                                ✎
+                            </a>
+
+                            <button
+                                type="button"
+                                class="task-action danger"
+                                data-action="delete"
+                                aria-label="Delete task"
+                            >
+                                ×
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                    {% else %}
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            ✓
+                        </div>
+
+                        <h4>No completed tasks yet</h4>
+
+                        <p>
+                            Complete a task and it will appear here.
+                        </p>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            {% endif %}
+
+
+            <!-- ALL TASKS -->
+            {% if current_view == 'all' %}
+
+            <section class="task-section">
+
+                <div class="section-heading">
+
+                    <div>
+                        <span class="section-kicker">
+                            WORKSPACE
+                        </span>
+
+                        <h3>
+                            All Tasks
+                        </h3>
+                    </div>
+
+                    <span class="section-count">
+                        {{ total_tasks }}
+                    </span>
+
+                </div>
+
+
+                <div class="task-list">
+
+                    {% for task in
+                        today_tasks
+                        + upcoming_tasks
+                        + overdue_tasks
+                        + completed_tasks
+                        + skipped_tasks
+                    %}
+
+                    <article
+                        class="task-item {% if task.completed %}completed{% endif %}"
+                        data-task-id="{{ task.id }}"
+                        data-task="{{ task.content|lower }}"
+                        data-priority="{{ task.priority }}"
+                        data-created="{{ task.created.isoformat() }}"
+                    >
+
+                        <button
+                            type="button"
+                            class="checkbox-button {% if task.completed %}checked{% endif %}"
+                            data-action="toggle"
+                            aria-label="Toggle task"
+                        ></button>
+
+
+                        <div class="task-content">
+
+                            <div class="task-main">
+
+                                <h4>
+                                    {{ task.content }}
+                                </h4>
+
+                                {% if task.description %}
+
+                                <p>
+                                    {{ task.description }}
+                                </p>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <div class="task-meta">
+
+                                <span
+                                    class="priority priority-{{ task.priority }}"
+                                >
+                                    {{ task.priority|capitalize }}
+                                </span>
+
+                                <span class="category">
+                                    {{ task.category }}
+                                </span>
+
+                                {% if task.exp_date %}
+
+                                <time>
+                                    {{ task.exp_date.strftime('%b %d, %Y %H:%M') }}
+                                </time>
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="task-actions">
+
+                            <a
+                                href="{{ url_for('tasks.task_edit', task_id=task.id) }}"
+                                class="task-action"
+                                aria-label="Edit task"
+                            >
+                                ✎
+                            </a>
+
+                            <button
+                                type="button"
+                                class="task-action danger"
+                                data-action="delete"
+                                aria-label="Delete task"
+                            >
+                                ×
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            {% endif %}
+
+
+        </main>
+
+    </div>
+
+
+    <!-- New Task Modal -->
+    <div
+        class="modal-overlay"
+        id="taskModal"
+        aria-hidden="true"
+    >
+
+        <div
+            class="task-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="taskModalTitle"
+        >
+
+            <div class="modal-header">
+
+                <div>
+                    <span class="section-kicker">
+                        NEW TASK
+                    </span>
+
+                    <h3 id="taskModalTitle">
+                        Create a task
+                    </h3>
+                </div>
+
+                <button
+                    type="button"
+                    class="modal-close"
+                    data-close-modal
+                    aria-label="Close modal"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <form
+                method="POST"
+                action="{{ url_for('tasks.task_page') }}"
+                class="task-form"
+            >
+
+                <div class="form-group">
+
+                    <label for="task">
+                        Task title
+                    </label>
+
+                    <input
+                        type="text"
+                        id="task"
+                        name="task"
+                        placeholder="What needs to be done?"
+                        maxlength="200"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="description">
+                        Description
+                    </label>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        rows="4"
+                        placeholder="Add some details..."
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="priority">
+                            Priority
+                        </label>
+
+                        <select
+                            id="priority"
+                            name="priority"
+                        >
+                            <option value="low">
+                                Low
+                            </option>
+
+                            <option
+                                value="medium"
+                                selected
+                            >
+                                Medium
+                            </option>
+
+                            <option value="high">
+                                High
+                            </option>
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="category">
+                            Category
+                        </label>
+
+                        <input
+                            type="text"
+                            id="category"
+                            name="category"
+                            placeholder="General"
+                            maxlength="50"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="exp_date">
+                        Deadline
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        id="exp_date"
+                        name="exp_date"
+                    >
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="secondary-button"
+                        data-close-modal
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="primary-button"
+                    >
+                        Create Task
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script
+        src="{{ url_for('static', filename='js/app.js') }}"
+        defer
+    ></script>
+
+</body>
+</html>

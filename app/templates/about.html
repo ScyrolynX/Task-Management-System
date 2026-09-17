@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>About – Task Management System</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+<body>
+
+    <div class="static-shell">
+
+        <nav class="static-nav">
+
+            <div class="static-brand">
+                <div class="brand-mark">T</div>
+                <span>TaskFlow</span>
+            </div>
+
+            <div class="static-links">
+                <a href="{{ url_for('tasks.task_page') }}">Tasks</a>
+                <a href="{{ url_for('pages.about') }}" class="active">About</a>
+                <a href="{{ url_for('pages.contact') }}">Contact</a>
+            </div>
+
+        </nav>
+
+        <main class="static-content">
+
+            <span class="eyebrow">ABOUT</span>
+            <h1>About This Task System</h1>
+
+            <div class="page-card">
+
+                <h2>What is this project?</h2>
+
+                <p>
+                    This Student Task Management System helps students add, organize,
+                    and track their daily tasks in a simple and clear way.
+                </p>
+
+                <p>You can:</p>
+
+                <ul>
+                    <li>Add tasks with optional due dates.</li>
+                    <li>See tasks grouped as Today, Upcoming, Overdue, Completed, and Skipped.</li>
+                    <li>Mark tasks as done, skip them, or delete them.</li>
+                </ul>
+
+                <p>
+                    This is my first backend project using Flask and SQLAlchemy,
+                    built to practice real-world web app concepts like routing, forms,
+                    and databases.
+                </p>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

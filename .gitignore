@@ -1,6 +1,12 @@
 myvenv/
 .venv/
 __pycache__/
-*.pyc
+*.py[cod]
 .env
-instance/*.db
+instance/
+*.db
+.pytest_cache/
+.coverage
+htmlcov/
+.vscode/
+.idea/

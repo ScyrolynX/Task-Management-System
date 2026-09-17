@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Task · TaskFlow</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+        .edit-page {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 32px;
+        }
+
+        .edit-card {
+            width: min(680px, 100%);
+            background: rgba(20, 20, 28, 0.88);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+        }
+
+        .edit-header {
+            margin-bottom: 28px;
+        }
+
+        .edit-header h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
+
+        .edit-header p {
+            margin: 0;
+            opacity: 0.6;
+        }
+
+        .edit-form {
+            display: grid;
+            gap: 20px;
+        }
+
+        .field {
+            display: grid;
+            gap: 8px;
+        }
+
+        .field label {
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0.75;
+        }
+
+        .field input,
+        .field textarea,
+        .field select {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.04);
+            color: inherit;
+            border-radius: 12px;
+            padding: 13px 14px;
+            outline: none;
+            font: inherit;
+        }
+
+        .field textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .field input:focus,
+        .field textarea:focus,
+        .field select:focus {
+            border-color: rgba(139, 92, 246, 0.8);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .edit-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .edit-actions a,
+        .edit-actions button {
+            flex: 1;
+            min-height: 48px;
+            border-radius: 12px;
+            border: 0;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: grid;
+            place-items: center;
+        }
+
+        .cancel-btn {
+            background: rgba(255,255,255,0.06);
+            color: inherit;
+        }
+
+        .save-btn {
+            background: #7c3aed;
+            color: white;
+        }
+
+        .save-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        @media (max-width: 600px) {
+            .edit-page {
+                padding: 16px;
+            }
+
+            .edit-card {
+                padding: 22px;
+                border-radius: 18px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .edit-actions {
+                flex-direction: column-reverse;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="edit-page">
+
+    <main class="edit-card">
+
+        <div class="edit-header">
+            <h1>Edit task</h1>
+            <p>Update the details of your task.</p>
+        </div>
+
+        <form
+            class="edit-form"
+            method="POST"
+            action="{{ url_for('tasks.task_edit', task_id=task.id) }}"
+        >
+
+            <div class="field">
+                <label for="task">Task title</label>
+
+                <input
+                    id="task"
+                    name="task"
+                    type="text"
+                    maxlength="200"
+                    value="{{ task.content }}"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label for="description">Description</label>
+
+                <textarea
+                    id="description"
+                    name="description"
+                    placeholder="Add more details..."
+                >{{ task.description or '' }}</textarea>
+            </div>
+
+            <div class="form-grid">
+
+                <div class="field">
+                    <label for="priority">Priority</label>
+
+                    <select id="priority" name="priority">
+                        <option
+                            value="low"
+                            {% if task.priority == "low" %}selected{% endif %}
+                        >
+                            Low
+                        </option>
+
+                        <option
+                            value="medium"
+                            {% if task.priority == "medium" %}selected{% endif %}
+                        >
+                            Medium
+                        </option>
+
+                        <option
+                            value="high"
+                            {% if task.priority == "high" %}selected{% endif %}
+                        >
+                            High
+                        </option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="category">Category</label>
+
+                    <input
+                        id="category"
+                        name="category"
+                        type="text"
+                        maxlength="50"
+                        value="{{ task.category }}"
+                    >
+                </div>
+
+            </div>
+
+            <div class="field">
+                <label for="exp_date">Deadline</label>
+
+                <input
+                    id="exp_date"
+                    name="exp_date"
+                    type="datetime-local"
+                    value="{% if task.exp_date %}{{ task.exp_date.strftime('%Y-%m-%dT%H:%M') }}{% endif %}"
+                >
+            </div>
+
+            <div class="edit-actions">
+
+                <a
+                    class="cancel-btn"
+                    href="{{ url_for('tasks.task_page') }}"
+                >
+                    Cancel
+                </a>
+
+                <button
+                    class="save-btn"
+                    type="submit"
+                >
+                    Save changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </main>
+
+</div>
+
+</body>
+</html>
